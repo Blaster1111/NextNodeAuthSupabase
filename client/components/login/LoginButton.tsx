@@ -3,6 +3,7 @@
 import { signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button"; // ✅ Import shadcn button
 
 export default function LoginButton() {
   const { data: session, status } = useSession();
@@ -15,11 +16,8 @@ export default function LoginButton() {
   }, [status, router]);
 
   return (
-    <button
-      onClick={() => signIn("google")}
-      className="bg-blue-600 text-white px-4 py-2 rounded"
-    >
+    <Button onClick={() => signIn("google")} variant="default">
       Sign in with Google
-    </button>
+    </Button>
   );
 }
