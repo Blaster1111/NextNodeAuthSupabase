@@ -129,7 +129,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\2CC\\codes\\portfolioVisualizer\\server\\generated\\prisma",
+      "value": "D:\\codes\\webdev\\NextNodeSupabaseAuth\\server\\generated\\prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -143,11 +143,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\2CC\\codes\\portfolioVisualizer\\server\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\codes\\webdev\\NextNodeSupabaseAuth\\server\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "../../prisma",
@@ -161,7 +161,7 @@ const config = {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgresql://postgres:Dh@irudu0711@db.tyrheikojmjzmcldcylk.supabase.co:5432/postgres"
+        "value": "postgresql://postgres:Gw5nZk3xO32eRfHV@db.brayfrirbjhnamybeuna.supabase.co:5432/postgres"
       }
     }
   },

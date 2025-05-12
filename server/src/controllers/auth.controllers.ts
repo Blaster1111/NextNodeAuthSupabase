@@ -1,28 +1,32 @@
-// src/controllers/auth.controllers.ts
-import { RequestHandler, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Request, Response } from 'express';
+import { generateToken } from '../utils/jwt';
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
-export const handleGoogleAuth: RequestHandler = async (req, res, next) => {
-  const { name, email, image } = req.body;
 
-  if (!email || !name) {
-    res.status(400).json({ error: "Missing required fields" });
-    return;
-  }
-
+export const handleGoogleAuth = async (req: Request, res: Response) => {
   try {
-    const user = await prisma.user.upsert({
-      where: { email },
-      update: { name, image },
-      create: { name, email, image },
-    });
-    res.status(200).json({ user });
-    return;
+    const { email, name, image } = req.body;
+
+    if (!email){
+      res.status(400).json({ error: 'Email is required' });
+      return;
+    } 
+
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: { email, name, image },
+      });
+    }
+
+    const accessToken = generateToken({ id: user.id, email: user.email });
+
+    res.status(200).json({ accessToken });
   } catch (err) {
-    console.error("Prisma error:", err);
-    next(err);
-    return;
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
 };

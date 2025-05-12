@@ -10,7 +10,6 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Missing Supabase credentials in environment variables');
 }
 
-// Create a single supabase client for the entire app
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default supabase;

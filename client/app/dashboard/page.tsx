@@ -20,6 +20,35 @@ export default function Dashboard() {
     if (status === "unauthenticated") router.push("/");
   }, [status, router]);
 
+  // 🔥 Call backend /user API with backendAccessToken
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = (session as any)?.backendAccessToken; // Adjust this if stored differently
+        if (!token) {
+          console.warn("No backendAccessToken found");
+          return;
+        }
+
+        const res = await fetch("http://localhost:5000/api/auth/user", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        console.log("Backend /user API response:", data);
+      } catch (err) {
+        console.error("Error calling backend /user API:", err);
+      }
+    };
+
+    if (status === "authenticated") {
+      fetchUserData();
+    }
+  }, [status, session]);
+
   if (status === "loading") return <p className="text-center mt-10">Loading...</p>;
 
   return (

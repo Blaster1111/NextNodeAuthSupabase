@@ -1,45 +1,59 @@
-import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import { NextAuthOptions } from "next-auth";
-
-const authOptions: NextAuthOptions = {
+import NextAuth from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import axios from 'axios';
+import { AuthOptions } from 'next-auth';
+export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization:{
-        params:{
-          prompt:"select_account",
-          access_type:"offline",
-          response_type:"code",
-        }
-      }
+      authorization: {
+        params: {
+          prompt: "select_account",
+          access_type: "offline",
+          response_type: "code",
+        },
+      },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    async signIn({ user }) {
-      try {
-        await fetch("http://localhost:5000/api/auth/google", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: user.name,
-            email: user.email,
-            image: user.image,
-          }),
-        });
-      } catch (error) {
-        console.error("Failed to store user:", error);
-        return false;
+    async jwt({ token, account, profile }) {
+      if (account && profile) {
+        try {
+          const res = await axios.post(`http://localhost:5000/api/auth/google`, {
+            email: profile.email,
+            name: profile.name,
+            image: profile.image,
+          });
+          token.backendAccessToken = res.data.accessToken;
+          token.user = {
+            email: profile.email,
+            name: profile.name,
+            image: profile.image
+          };
+        } catch (err) {
+          console.error('Backend token fetch error:', err);
+        }
       }
-      return true;
+      return token;
     },
-    async redirect({ url, baseUrl }) {
+    async session({ session, token }) {
+      session.backendAccessToken = token.backendAccessToken as string;
+      session.user = {
+        email: token.user?.email ?? null,
+        name: token.user?.name ?? null,
+        image: token.user?.image ?? null,
+      };
+      return session;
+    },
+    async redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
-
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
